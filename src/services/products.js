@@ -25,3 +25,27 @@ export const fetchProducts = async () => {
         throw error
     }
 }
+
+export const addItemToInventory = async (formData) => {
+    try {
+        const token = localStorage.getItem('token');
+        const url = `${baseUrl}/vendor/additem`;
+        const response = await fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                Authorization: token,
+            }
+        });
+
+        if (!response.ok) {
+            const err = await commonErrorHandler(response)
+            throw err
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};

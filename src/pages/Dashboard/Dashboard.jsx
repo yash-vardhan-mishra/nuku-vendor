@@ -2,6 +2,7 @@
 import React from "react";
 import Layout from "../../Layout";
 import { useDatabase } from "../../contexts/DatabaseContext";
+import ProductCard from "../../components/Utilities/ProductCart";
 
 const Dashboard = () => {
     const { data } = useDatabase();

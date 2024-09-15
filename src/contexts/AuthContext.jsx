@@ -8,7 +8,9 @@ export const AuthProvider = ({ children }) => {
     const [otpSent, setOtpSent] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("token");    
+        console.log('token in AuthProvider ',token);
+            
         if (token) {
             setAuthenticated(true);
         }
