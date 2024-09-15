@@ -13,7 +13,6 @@ const Authentication = () => {
     const [otp, setOtp] = useState("");
     const [isRegistering, setIsRegistering] = useState(false);
 
-    // get the path params to redirect the user after authentication
     const from = location.state?.from || "/";
 
 

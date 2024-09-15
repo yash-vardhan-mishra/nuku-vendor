@@ -3,9 +3,8 @@ import { useState, useContext } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import MainMenu from "./MainMenu";
 import { AuthContext } from "../../contexts/AuthContext";
-import Modal from "./Modal";
+import Modal from "../Modal";
 import { useDatabase } from "../../contexts/DatabaseContext";
-import { checkForErrorType } from "../../utils";
 
 const Header = () => {
     const navigate = useNavigate();

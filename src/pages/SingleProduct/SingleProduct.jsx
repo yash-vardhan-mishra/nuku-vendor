@@ -1,44 +1,66 @@
 import React, { useState, useContext } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { BsCart2 } from "react-icons/bs";
+import { useLocation, useNavigate } from "react-router-dom";
+import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import Layout from "../../Layout";
 import Loading from "../../components/Utilities/Loading";
 import { AuthContext } from "../../contexts/AuthContext";
+import Modal from "../../components/Modal";
+import { deleteItemFromInventory, updateItemInInventory } from "../../services/products";
+import { useDatabase } from "../../contexts/DatabaseContext";
+import { checkForErrorType } from "../../utils";
 
 const SingleProduct = () => {
     const [loading, setLoading] = useState(false);
-    const { authenticated } = useContext(AuthContext);
+    const { logout } = useContext(AuthContext);
+    const { fetchData } = useDatabase()
     const navigate = useNavigate();
-    const location = useLocation()
+    const location = useLocation();
     const { product } = location.state || {};
-    console.log('product is', product);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
+    const updateItem = (newItem) => {
+        setLoading(true)
+        updateItemInInventory({
+            "productId": product.id,
+            "updateData": {
+                "category": newItem.category,
+                "description": newItem.description,
+                "price": newItem.price,
+                "stock_quantity": newItem.stock_quantity,
+            }
+        }).then(res => {
+            navigate('/dashboard');
+            fetchData()
+        }).catch(err => {
+            const shouldDeleteToken = checkForErrorType(err);
+            if (shouldDeleteToken) {
+                logout()
+                navigate(`/login`);
+            }
+        })
+    };
 
-    // useEffect(() => {
-    //     if (!loading) {
-    //         setLoading(true)
-    //     }
-    //     const getSingleProduct = async (id) => {
-    //         fetchSingleProduct(id)
-    //             .then(res => {
-    //                 setSingleProduct(res);
-    //             })
-    //             .catch(err => {
-    //                 alert(err.message || 'Something went wrong')
-    //             }).finally(() => {
-    //                 setLoading(false)
-    //             })
-    //     };
+    const deleteItem = () => {
+        setLoading(true)
+        deleteItemFromInventory(product.id).then(res => {
+            navigate('/dashboard');
+            fetchData()
+        }).catch(err => {
+            const shouldDeleteToken = checkForErrorType(err);
+            if (shouldDeleteToken) {
+                logout()
+                navigate(`/login`);
+            }
+        })
 
-    //     getSingleProduct(id);
-    // }, [id]);
+    }
 
     if (loading) {
         return <Loading />;
     }
 
     if (product?.image_url) {
-        const { title, image_url, description, category, price, stock_quantity } = product;
+        const { name, image_url, description, category, price, stock_quantity } = product;
 
         return (
             <Layout>
@@ -50,7 +72,7 @@ const SingleProduct = () => {
                                     <img
                                         className="mx-auto h-full w-10/12 object-cover mix-blend-multiply"
                                         src={image_url}
-                                        alt={title}
+                                        alt={name}
                                     />
                                 </div>
                             </div>
@@ -59,7 +81,7 @@ const SingleProduct = () => {
                                     {category}
                                 </p>
                                 <h2 className="mb-3 text-4xl font-bold leading-9 text-gray-800">
-                                    {title}
+                                    {name}
                                 </h2>
                                 <p className="my-3 border-b border-t py-4 text-3xl leading-10">
                                     ${price}
@@ -79,24 +101,43 @@ const SingleProduct = () => {
                                                 {stock_quantity}
                                             </div>
                                         </div>
-
                                     </form>
 
-                                    <button
-                                        className="flex items-center justify-center gap-3 rounded bg-sky-500 px-8 py-3 text-white transition duration-300 hover:bg-sky-600"
-                                        // onClick={addItemsToCart}
-                                    >
-                                        <BsCart2 />
-                                        <span>Edit Details</span>
-                                    </button>
+                                    <div className="flex gap-4">
+                                        <button
+                                            className="flex w-1/2 items-center justify-center gap-3 rounded bg-sky-500 px-4 py-3 text-white transition duration-300 hover:bg-sky-600"
+                                            onClick={() => setIsModalVisible(true)} // Open modal
+                                        >
+                                            <BsPencilSquare />
+                                            <span>Edit Details</span>
+                                        </button>
+
+                                        <button
+                                            onClick={() => deleteItem()}
+                                            className="flex w-1/2 items-center justify-center gap-3 rounded bg-red-500 px-4 py-3 text-white transition duration-300 hover:bg-red-600"
+                                        >
+                                            <BsTrash />
+                                            <span>Delete Item</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <Modal
+                    product={product}
+                    isUpdating
+                    isModalVisible={isModalVisible}
+                    setIsModalVisible={setIsModalVisible}
+                    updateItem={updateItem}
+                />
             </Layout>
         );
     }
+
+    return null;
 };
 
 export default SingleProduct;

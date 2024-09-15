@@ -49,3 +49,52 @@ export const addItemToInventory = async (formData) => {
         throw error;
     }
 };
+
+export const updateItemInInventory = async (body) => {
+    try {
+        const token = localStorage.getItem('token');
+        const url = `${baseUrl}/vendor/updateitem`;
+        const response = await fetch(url, {
+            method: 'PUT',
+            body: JSON.stringify(body),
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: token,
+            }
+        });
+
+        if (!response.ok) {
+            const err = await commonErrorHandler(response)
+            throw err
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const deleteItemFromInventory = async (productId) => {
+    try {
+        const token = localStorage.getItem('token');
+        const url = `${baseUrl}/vendor/deleteitem?productId=${productId}`;
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: token,
+            }
+        });
+
+        if (!response.ok) {
+            const err = await commonErrorHandler(response)
+            throw err
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        throw error;
+    }
+};

@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import ReactModal from "react-modal";
 
-// Ensure the accessibility element is set up properly
 ReactModal.setAppElement("#root");
 
-const Modal = ({ isModalVisible, setIsModalVisible, addItem }) => {
+const Modal = ({ isModalVisible, setIsModalVisible, addItem, isUpdating, product = {}, updateItem }) => {
     const [inventoryData, setInventoryData] = useState({
-        category: "",
-        description: "",
-        name: "", 
-        price: "",
-        stock_quantity: "",
+        category: product.category || "",
+        description: product.description || "",
+        name: product.name || "",
+        price: product.price || "",
+        stock_quantity: product.stock_quantity || "",
         image: null,
     });
 
@@ -25,15 +24,17 @@ const Modal = ({ isModalVisible, setIsModalVisible, addItem }) => {
     const handleImageUpload = (e) => {
         setInventoryData((prevData) => ({
             ...prevData,
-            image: e.target.files[0], // Store the uploaded image file
+            image: e.target.files[0]
         }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Logic to handle inventory data submission goes here
-        addItem(inventoryData)
-        // Close the modal after submission
+        if (isUpdating) {
+            updateItem(inventoryData)
+        } else {
+            addItem(inventoryData)
+        }
         setIsModalVisible(false);
     };
 
@@ -41,11 +42,11 @@ const Modal = ({ isModalVisible, setIsModalVisible, addItem }) => {
         <ReactModal
             isOpen={isModalVisible}
             onRequestClose={() => setIsModalVisible(false)}
-            contentLabel="Add Inventory Modal"
+            contentLabel="Add/Edit Inventory Modal"
             className="relative bg-white rounded-lg p-8 w-full max-w-lg mx-auto mt-20 max-h-[85vh] overflow-auto"
             overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
         >
-            <h2 className="text-lg font-bold mb-4">Add Inventory</h2>
+            <h2 className="text-lg font-bold mb-4">{isUpdating ? 'Edit' : 'Add'} Inventory</h2>
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label className="block mb-2">Category</label>
@@ -101,7 +102,7 @@ const Modal = ({ isModalVisible, setIsModalVisible, addItem }) => {
                         required
                     />
                 </div>
-                <div className="mb-4">
+                {!isUpdating ? <div className="mb-4">
                     <label className="block mb-2">Upload Image</label>
                     <input
                         type="file"
@@ -109,7 +110,7 @@ const Modal = ({ isModalVisible, setIsModalVisible, addItem }) => {
                         onChange={handleImageUpload}
                         className="w-full"
                     />
-                </div>
+                </div> : null}
                 <div className="flex justify-end gap-3">
                     <button
                         type="button"
@@ -122,7 +123,7 @@ const Modal = ({ isModalVisible, setIsModalVisible, addItem }) => {
                         type="submit"
                         className="bg-blue-500 px-4 py-2 text-white rounded"
                     >
-                        Add Inventory
+                        {isUpdating ? 'Edit Item' : 'Add Item'}
                     </button>
                 </div>
             </form>
