@@ -7,10 +7,7 @@ const ProductCard = ({ product, className }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const openProduct = () => {
-    console.log('what is this', product);
-
     navigate('/product', { state: { product } });
-
   };
 
   if (product) {

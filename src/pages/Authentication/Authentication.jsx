@@ -149,6 +149,9 @@ const Authentication = () => {
                     </p>
                 )}
             </form>
+            <div className="image-credit">
+                Image by <a href="https://pixabay.com/users/heungsoon-4523762/?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=2464609">HeungSoon</a> from <a href="https://pixabay.com//?utm_source=link-attribution&utm_medium=referral&utm_campaign=image&utm_content=2464609">Pixabay</a>
+            </div>
         </div>
     );
 };
