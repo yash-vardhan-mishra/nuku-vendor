@@ -6,8 +6,11 @@ const ProductCard = ({ product, className }) => {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
 
-  const openProduct = (id) => {
-    navigate(`/product/${id}`);
+  const openProduct = () => {
+    console.log('what is this', product);
+
+    navigate('/product', { state: { product } });
+
   };
 
   if (product) {
@@ -26,7 +29,7 @@ const ProductCard = ({ product, className }) => {
               className={`aspect-square w-full  cursor-pointer object-contain transition duration-500 ease-out ${isHovered && "scale-110"}`}
               src={product.image_url}
               alt={product.name}
-              onClick={() => openProduct(product.id)}
+              onClick={() => openProduct()}
             />
           </div>
           <span className="p-2 text-sm font-bold uppercase">

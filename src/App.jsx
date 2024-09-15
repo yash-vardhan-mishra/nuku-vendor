@@ -5,7 +5,8 @@ import Authentication from "./pages/Authentication/Authentication";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import { useContext } from "react";
 import { DatabaseProvider } from "./contexts/DatabaseContext";
-
+import SingleProduct from "./pages/SingleProduct/SingleProduct";
+ 
 function App() {
   return (
     <Router>
@@ -17,6 +18,7 @@ function App() {
 
             {/* Protected Route */}
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path="/product" element={<ProtectedRoute><SingleProduct /></ProtectedRoute>} />
 
             {/* Redirect to login or dashboard */}
             <Route path="*" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
