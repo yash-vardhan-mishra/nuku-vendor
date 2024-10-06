@@ -16,7 +16,6 @@ const Authentication = () => {
 
     const from = location.state?.from || "/";
 
-
     const resetValues = () => {
         setEmail('');
         setUsername('');
@@ -24,39 +23,79 @@ const Authentication = () => {
         setOtp('');
     };
 
+    const validateFields = () => {
+        // Common validation rules
+        if (email.length > 32) {
+            toast.warn('Email cannot exceed 32 characters');
+            return false;
+        }
+        if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,6}$/.test(email) || /(?:\.[a-zA-Z]{2,}){2,}/.test(email.split('@')[1])) {
+            toast.warn('Invalid email format');
+            return false;
+        }
+        if (password.length > 32) {
+            toast.warn('Password cannot exceed 32 characters');
+            return false;
+        }
+        if (/\s/.test(password)) {
+            toast.warn('Password cannot contain spaces');
+            return false;
+        }
+
+        if (otpSent) {
+            // OTP validation
+            if (otp.length !== 6) {
+                toast.warn('OTP must be exactly 6 digits');
+                return false;
+            }
+            if (!/^\d+$/.test(otp)) {
+                toast.warn('OTP must only contain numbers');
+                return false;
+            }
+        }
+
+        if (isRegistering) {
+            // Registration-specific validation
+            if (username.length > 32) {
+                toast.warn('Username cannot exceed 32 characters');
+                return false;
+            }
+            if (!/^[A-Za-z]+$/.test(username)) {
+                toast.warn('Username must only contain alphabets');
+                return false;
+            }
+        }
+
+        return true;
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
-        if (otpSent) {
-            try {
+        // Run validations
+        if (!validateFields()) return;
+
+        try {
+            if (otpSent) {
                 await verify(email, otp);
                 navigate(from);
-            } catch (error) {
-                showError(error.message)
-            }
-        } else if (isRegistering) {
-            try {
+            } else if (isRegistering) {
                 await register(username, email, password);
-            } catch (error) {
-                showError(error.message)
-            }
-        } else {
-            try {
+            } else {
                 await login(email, password);
-            } catch (error) {
-                showError(error.message)
             }
+        } catch (error) {
+            showError(error);
         }
     };
 
     const showError = (error) => {
-        console.log(error)
+        console.log(error);
         const errorMessage = error.message || 'Something went wrong';
         const colonIndex = errorMessage.indexOf(':');
         const finalMessage = colonIndex !== -1 ? errorMessage.slice(colonIndex + 1).trim() : errorMessage;
         toast.error(finalMessage);
     };
-
 
     const toggleRegister = () => {
         setIsRegistering(!isRegistering);
@@ -92,6 +131,7 @@ const Authentication = () => {
                                 className="otp-input"
                                 maxLength="6"
                                 pattern="\d*"
+                                required
                             />
                         </>
                     ) : isRegistering ? (
@@ -105,6 +145,7 @@ const Authentication = () => {
                                 value={username}
                                 onChange={(event) => setUsername(event.target.value)}
                                 className="auth-input"
+                                required
                             />
                             <label htmlFor="email" className="auth-label">
                                 Email:
@@ -115,6 +156,7 @@ const Authentication = () => {
                                 value={email}
                                 onChange={(event) => setEmail(event.target.value)}
                                 className="auth-input"
+                                required
                             />
                         </>
                     ) : (
@@ -128,6 +170,7 @@ const Authentication = () => {
                                 value={email}
                                 onChange={(event) => setEmail(event.target.value)}
                                 className="auth-input"
+                                required
                             />
                         </>
                     )}
@@ -142,6 +185,7 @@ const Authentication = () => {
                                 value={password}
                                 onChange={(event) => setPassword(event.target.value)}
                                 className="auth-input"
+                                required
                             />
                         </>
                     )}
