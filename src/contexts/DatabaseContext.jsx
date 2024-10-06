@@ -3,6 +3,7 @@ import { AuthContext } from "./AuthContext";
 import { addItemToInventory, fetchProducts } from "../services/products";
 import Loading from "../components/Utilities/Loading";
 import { checkForErrorType } from "../utils";
+import { toast } from 'react-toastify';
 
 const DatabaseContext = createContext();
 
@@ -22,11 +23,18 @@ export const DatabaseProvider = ({ children }) => {
         fetchProducts().then(res => {
             setData(res)
         }).catch(err => {
-            alert(err.message || 'Something went wrong')
+            showError(err)
         }).finally(() => {
             setLoading(false)
         })
 
+    };
+
+    const showError = (error) => {
+        const errorMessage = error.message || 'Something went wrong';
+        const colonIndex = errorMessage.indexOf(':');
+        const finalMessage = colonIndex !== -1 ? errorMessage.slice(colonIndex + 1).trim() : errorMessage;
+        toast.error(finalMessage);
     };
 
     const addProduct = (formData) => {

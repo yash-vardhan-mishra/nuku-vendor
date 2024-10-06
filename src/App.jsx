@@ -5,9 +5,12 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import { useContext } from "react";
 import { DatabaseProvider } from "./contexts/DatabaseContext";
 import SingleProduct from "./pages/SingleProduct/SingleProduct";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
  
 function App() {
   return (
+    <>
     <Router>
       <AuthProvider>
         <DatabaseProvider>
@@ -24,7 +27,9 @@ function App() {
           </Routes>
         </DatabaseProvider>
       </AuthProvider>
+      <ToastContainer />
     </Router>
+    </>
   );
 }
 
